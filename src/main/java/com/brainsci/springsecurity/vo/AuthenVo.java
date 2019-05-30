@@ -1,7 +1,6 @@
 package com.brainsci.springsecurity.vo;
 
-
-import com.aknife.blog.security.GrantedAuthorityImpl;
+import com.brainsci.springsecurity.GrantedAuthorityImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

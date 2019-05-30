@@ -63,17 +63,17 @@
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		<!--配置Redis-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
+		<!--</dependency>-->
 		<!--利用Redis存储HttpSession, 实现缓存共享, 利于分布式存储-->
 		<!--mysql是关系型数据库，主要用于存放持久化数据，将数据存储在硬盘中，读取速度较慢。-->
 		<!--redis是NOSQL，即非关系型数据库，也是缓存数据库，即将数据存储在缓存中，缓存的读取速度快，能够大大的提高运行效率，但是保存时间有限-->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-redis</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.session</groupId>-->
+			<!--<artifactId>spring-session-data-redis</artifactId>-->
+		<!--</dependency>-->
 		<!--连接MySQL-->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -107,11 +107,6 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.2</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<version>4.2.4.RELEASE</version>
 		</dependency>
 	</dependencies>
 

@@ -2,7 +2,7 @@ package com.brainsci.service;
 
 import com.brainsci.form.CommonResultForm;
 import com.brainsci.form.NetAnalysisOption;
-import com.brainsci.security.util.GsonPlus;
+import com.brainsci.springsecurity.util.GsonPlus;
 import com.brainsci.utils.FileHandleUtils;
 import com.brainsci.utils.MatlabUtils;
 import com.brainsci.utils.ZipUtils;

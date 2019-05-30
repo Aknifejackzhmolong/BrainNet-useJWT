@@ -1,6 +1,6 @@
 package com.brainsci.utils;
 
-import com.brainsci.security.util.GsonPlus;
+import com.brainsci.springsecurity.util.GsonPlus;
 import com.brainsci.websocket.form.WebSocketMessageForm;
 import com.brainsci.websocket.server.WebSocketServer;
 

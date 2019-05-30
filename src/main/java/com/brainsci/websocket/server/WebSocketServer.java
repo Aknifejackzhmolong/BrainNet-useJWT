@@ -1,6 +1,6 @@
 package com.brainsci.websocket.server;
 
-import com.brainsci.security.util.GsonPlus;
+import com.brainsci.springsecurity.util.GsonPlus;
 import com.brainsci.websocket.form.WebSocketMessageForm;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

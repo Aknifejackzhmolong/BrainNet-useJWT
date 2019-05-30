@@ -1,6 +1,6 @@
 package com.brainsci.springsecurity.vo;
 
-import com.aknife.blog.security.JwtAuthenticationToken;
+import com.brainsci.springsecurity.JwtAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;

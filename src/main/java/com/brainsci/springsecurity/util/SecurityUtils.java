@@ -1,6 +1,6 @@
 package com.brainsci.springsecurity.util;
 
-import com.aknife.blog.security.JwtAuthenticationToken;
+import com.brainsci.springsecurity.JwtAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

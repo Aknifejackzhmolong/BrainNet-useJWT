@@ -61,12 +61,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/springfox-swagger-ui/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
-                // 首页和登录页面
+                // 首页和登录
                 .antMatchers("/").permitAll()
+                .antMatchers("/bsci/**").permitAll()
+                .antMatchers("/MyFile/**").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
-                .antMatchers("/article/**").permitAll()
-                .antMatchers("/classify/**").permitAll()
+                .antMatchers("/verifyMail").permitAll()
+                .antMatchers("/webSocket/**").permitAll()
                 .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
                 // 其他所有请求需要身份认证
                 .anyRequest().authenticated();

@@ -1,6 +1,6 @@
 package com.brainsci.springsecurity;
 
-import com.aknife.blog.security.util.PasswordEncoder;
+import com.brainsci.springsecurity.util.PasswordEncoder;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

@@ -1,11 +1,8 @@
 package com.brainsci.service;
 
-import com.brainsci.security.entity.UserEntity;
-import com.brainsci.security.repository.UserBaseRepository;
-import com.brainsci.security.repository.UserRepository;
-import com.brainsci.security.service.MailUtils;
-import com.brainsci.security.util.GsonPlus;
+import com.brainsci.springsecurity.util.GsonPlus;
 import com.brainsci.utils.FileHandleUtils;
+import com.brainsci.utils.MailUtils;
 import com.brainsci.utils.ZipUtils;
 import com.brainsci.websocket.form.WebSocketMessageForm;
 import com.brainsci.websocket.server.WebSocketServer;
@@ -206,7 +203,7 @@ public class MRIService {
         File dtipub = new File(filedir+"./public/DTI/");
         File working = new File(filedir + userHomeDir + "/dti/"+task+"/working_dwi");
         File zipTag = new File(working.getAbsolutePath() + ".zip");
-        if (working.exists())FileHandleUtils.deleteFold(working);// 判断文件夹是否存在，如果存在就删除
+//        if (working.exists())FileHandleUtils.deleteFold(working);// 判断文件夹是否存在，如果存在就删除
         if(!path.exists()) path.mkdirs();
         zipTag.delete();// 删除原有压缩文件
         paraJson = paraJson.replaceAll("/public/DTI",dtipub.getAbsolutePath().replaceAll("/./","/"));
@@ -256,104 +253,4 @@ public class MRIService {
             e.printStackTrace();
         }
     }
-//    @Async
-//    public void tbss(HashMap<String,String>map, String task, String token, String paraJson){
-//        String userHomeDir = map.get("userHomeDir");
-//        File path = new File(filedir + userHomeDir + "/dti/"+task);
-//        paraJson = String.format(paraJson, path.getAbsoluteFile());
-//        System.out.println(paraJson);
-//        String[] cmd = {"python","/home/cdj/brainnet/python_pipeline/dwi_dti/tbss_display_result.py", paraJson};
-//        WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbssState", "running")),token);
-//        try{
-//            Process p = Runtime.getRuntime().exec(cmd);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//            String line = br.readLine();
-//            while(p.isAlive())
-//                if (line != null){
-//                    WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbss", line)),token);
-//                    System.out.println(line);
-//                    line = br.readLine();
-//                }
-//            BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-//            line = err.readLine();
-//            while(line != null){
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbss", line)),token);
-//                System.out.println(line);
-//                line = err.readLine();
-//            }
-//            System.out.println("exit("+p.exitValue()+")");
-//            if (p.exitValue()!=0){
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbss", "error")),token);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbssState", "error")),token);
-//                System.out.println("error");
-//            } else {
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbss", "finish")),token);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("tbssState", "finish")),token);
-////                mailUtils.sendCompleteMail(map.get("email"),map.get("username"),"tbss",true);
-//                System.out.println("finish");
-//            }
-//            br.close();
-//            err.close();
-//            p.destroy();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-//    @Async
-//    public void runPyScript(HashMap<String,String>map,String scriptpath, String func, String task, String token, String paraJson){
-//        String userHomeDir = map.get("userHomeDir");
-//        File path = new File(String.format(filedir + userHomeDir + "/%s/%s",func,task));
-//        File pub = new File(filedir+"./public/");
-//        File outputpath = new File(String.format(filedir + userHomeDir + "/%s/%s/working",func,task));
-//        File zipTag = new File(outputpath.getAbsolutePath() + ".zip");
-//        if (outputpath.exists())FileHandleUtils.deleteFold(outputpath);// 判断文件夹是否存在，如果存在就删除
-//        if(!path.exists()) path.mkdirs();
-//        zipTag.delete();// 删除原有压缩文件
-//        paraJson = paraJson.replaceAll("/public/",pub.getAbsolutePath().replaceAll("/./","/"));
-//        System.out.println(paraJson);
-//        String[] cmd = {"python",scriptpath,path.getAbsolutePath(), paraJson};
-//        WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm("dtiState", "running")),token);
-//        try{
-//            Process p = Runtime.getRuntime().exec(cmd);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//            String line = br.readLine();
-//            while(p.isAlive())
-//                if (line != null){
-//                    WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, line)),token);
-//                    System.out.println(line);
-//                    line = br.readLine();
-//                }
-//            BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-//            line = err.readLine();
-//            while(line != null){
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, line)),token);
-//                System.out.println(line);
-//                line = err.readLine();
-//            }
-//            System.out.println("exit("+p.exitValue()+")");
-//            if (p.exitValue()!=0){
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, "error")),token);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func+"State", "error")),token);
-//                System.out.println("error");
-//            } else if (outputpath.exists()) {
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, " compress...")),token);
-//                System.out.println("compress...");
-//                FileOutputStream fos = new FileOutputStream(zipTag);
-//                ZipUtils.toZip(outputpath.getAbsolutePath(), fos, true);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, "finish")),token);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func+"State", "finish")),token);
-//                mailUtils.sendCompleteMail(map.get("email"),map.get("username"),func,true);
-//                System.out.println("finish");
-//            }else {
-//                System.out.println("compress fail");
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func, "compress fail")),token);
-//                WebSocketServer.sendMessage(GsonPlus.GSON.toJson(new WebSocketMessageForm(func+"State", "error")),token);
-//            }
-//            br.close();
-//            err.close();
-//            p.destroy();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
 }

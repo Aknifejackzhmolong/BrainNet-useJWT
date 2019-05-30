@@ -1,10 +1,10 @@
 package com.brainsci.springsecurity;
 
 
-import com.aknife.blog.entity.User;
-import com.aknife.blog.entity.UserRole;
-import com.aknife.blog.repo.UserRepository;
-import com.aknife.blog.repo.UserRoleRepository;
+import com.brainsci.springsecurity.entity.User;
+import com.brainsci.springsecurity.entity.UserRole;
+import com.brainsci.springsecurity.repository.UserRepository;
+import com.brainsci.springsecurity.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println(user);
 
         // 用户权限列表，根据用户拥有的权限标识与如 @PreAuthorize("hasAuthority('sys:menu:view')") 标注的接口对比，决定是否可以调用接口
-        List<UserRole> adminRoleList = userRoleRepository.findUserRoleListByUserEmail(user.getEmail());
+        List<UserRole> adminRoleList = userRoleRepository.findUserBaseListByUserEmail(user.getEmail());
         Set<String> permissions = new HashSet<>();
         for (UserRole adminRole:adminRoleList){
             permissions.add(adminRole.getRole().getName());

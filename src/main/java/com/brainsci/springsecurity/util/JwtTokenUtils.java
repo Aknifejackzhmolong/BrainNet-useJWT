@@ -1,10 +1,10 @@
 package com.brainsci.springsecurity.util;
 
-import com.aknife.blog.common.ResultEnum;
-import com.aknife.blog.security.GrantedAuthorityImpl;
-import com.aknife.blog.security.JwtAuthenticationToken;
-import com.aknife.blog.security.JwtUserDetails;
-import com.aknife.blog.security.execption.BaseException;
+import com.brainsci.common.ResultEnum;
+import com.brainsci.springsecurity.GrantedAuthorityImpl;
+import com.brainsci.springsecurity.JwtAuthenticationToken;
+import com.brainsci.springsecurity.JwtUserDetails;
+import com.brainsci.springsecurity.execption.BaseException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

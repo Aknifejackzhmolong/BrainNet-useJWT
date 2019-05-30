@@ -1,18 +1,13 @@
 package com.brainsci.filesys;
 
-import com.brainsci.filesys.repository.FileRepository;
 import com.brainsci.form.CommonResultForm;
-import com.brainsci.security.repository.UserBaseRepository;
+import com.brainsci.springsecurity.JwtUserDetails;
+import com.brainsci.springsecurity.repository.UserRepository;
 import com.brainsci.utils.FileHandleUtils;
-import com.brainsci.utils.RemoteAddrUtils;
 import com.brainsci.utils.ZipUtils;
-import io.lettuce.core.dynamic.annotation.Param;
-import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.util.ResourceUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,24 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipOutputStream;
 
 @RestController
 public class FileController {
     @Autowired
     private Environment env;
     @Autowired
-    private FileRepository fileRepository;
-    @Autowired
-    private UserBaseRepository userBaseRepository;
+    private UserRepository userRepository;
 //    @Value("${filesys.public-dir}")
 //    private String publicDir;
     private FileHandleUtils fileHandleUtils;
@@ -48,7 +37,10 @@ public class FileController {
         String fileDir = env.getProperty("filesys.dir");
         String flag = request.getRequestURI().substring(4,7);
         final String uri = flag.equals("dir")?URLDecoder.decode(request.getRequestURI().substring(12), "UTF-8"):URLDecoder.decode(request.getRequestURI().substring(13), "UTF-8");
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory().substring(2);
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         File[] fileArr = new File(fileDir + userHomeDir + "/" + uri).listFiles(flag.equals("dir")?
                 new FileFilter() {
                     @Override
@@ -78,7 +70,10 @@ public class FileController {
     public CommonResultForm singleFileDelete(HttpServletRequest request, HttpSession httpSession) throws IOException{
         String uri = request.getRequestURI().substring(8);
         uri = URLDecoder.decode(uri, "UTF-8");
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         File tag = new File(env.getProperty("filesys.dir") + userHomeDir + "/" + uri);
         if (tag.exists()) {
             if (tag.isDirectory()) {
@@ -92,10 +87,12 @@ public class FileController {
     public void singleFileGet(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession) throws IOException{
         String uri = request.getRequestURI().substring(8);
         uri = URLDecoder.decode(uri, "UTF-8");
-        String username = (String) httpSession.getAttribute("username");
         String fileDir = env.getProperty("filesys.dir");
-        String userHomeDir = userBaseRepository.getOne(username).getHomeDirectory();
-        File file = new File(fileDir + (userHomeDir + "/" + uri).replaceAll("\\./",""));
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
+        File file = new File(fileDir + userHomeDir + "/" + (uri).replaceAll("(\\./)|(\\.\\./)",""));// 替换掉可能导致非访访问的路径字符
         System.out.println(file.getAbsolutePath());
         if (!file.exists()) {
             response.sendError(402);
@@ -142,7 +139,10 @@ public class FileController {
     }
     @PostMapping(value = "/deleteFile")
     public CommonResultForm multiFileDelete(@RequestBody ArrayList<String> deletefiles,HttpServletRequest request, HttpSession httpSession) throws IOException{
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         if (deletefiles == null) return CommonResultForm.of400("delete fail");
         List<String> res = new ArrayList<>();
         for(String uri : deletefiles){
@@ -154,7 +154,10 @@ public class FileController {
     }
     @PostMapping(value = "/MyFile")
     public CommonResultForm postForDownload(@RequestBody ArrayList<String> files,HttpServletResponse response, HttpSession httpSession) throws IOException{
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         String fileDir = env.getProperty("filesys.dir");
         List<File> tag = new ArrayList<>();
         for(String uri : files){
@@ -181,7 +184,10 @@ public class FileController {
     }
     @PostMapping(value = "/find")
     public CommonResultForm multiFileFind(@RequestBody ArrayList<String> findfiles,HttpServletRequest request, HttpSession httpSession) throws IOException{
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         if (findfiles == null) return CommonResultForm.of400("find fail");
         List<String> res = new ArrayList<>();
         for(String uri : findfiles){
@@ -194,7 +200,10 @@ public class FileController {
     @PostMapping("/uploadsinglefile")
     public CommonResultForm singleFileUpload(MultipartFile file, HttpServletRequest request, HttpSession httpSession) throws IOException {
 //        String ip = RemoteAddrUtils.getRemoteAddrUtils().getRemoteIP(request);
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         String uploadFolder = env.getProperty("filesys.dir") + userHomeDir + "/matrix/";
         try {
             byte[] bytes = file.getBytes();
@@ -216,7 +225,10 @@ public class FileController {
     @PostMapping("/uploadfiles/{part}")
     public CommonResultForm multiFileUpload(@PathVariable(value="part")String part, @RequestParam("uploadfile")MultipartFile file, HttpServletRequest request, HttpSession httpSession) throws IOException {
 //        String ip = RemoteAddrUtils.getRemoteAddrUtils().getRemoteIP(request);
-        String userHomeDir = userBaseRepository.getOne((String) httpSession.getAttribute("username")).getHomeDirectory();
+        JwtUserDetails jwtUserDetails =
+                (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = jwtUserDetails.getUsername();
+        String userHomeDir = userRepository.findUserByEmail(email).getSalt();
         String uploadFolder = env.getProperty("filesys.dir") + userHomeDir + "/"+part+"/";
         try {
             byte[] bytes = file.getBytes();

@@ -1,6 +1,6 @@
 package com.brainsci.springsecurity.execption;
 
-import com.aknife.blog.common.ResultEnum;
+import com.brainsci.common.ResultEnum;
 
 /**
  * Base异常

@@ -1,7 +1,6 @@
 package com.brainsci.springsecurity.execption;
 
-
-import com.aknife.blog.common.ResultEnum;
+import com.brainsci.common.ResultEnum;
 
 /**
  * 空属性异常

@@ -1,7 +1,6 @@
 package com.brainsci.springsecurity.execption;
 
-
-import com.aknife.blog.common.ResultEnum;
+import com.brainsci.common.ResultEnum;
 
 /**
  * 未知资源(restful接口)
